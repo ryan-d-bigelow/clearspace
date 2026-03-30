@@ -10,6 +10,7 @@ RUN pip install --no-cache-dir uv
 
 COPY pyproject.toml README.md ./
 COPY app.py ./
+COPY src ./src
 
 RUN uv pip install --system .
 
@@ -18,4 +19,4 @@ EXPOSE 8000
 ENV HOST=0.0.0.0 \
     PORT=8000
 
-CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "task_tracker.app:app", "--host", "0.0.0.0", "--port", "8000"]

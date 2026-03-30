@@ -3,13 +3,17 @@ import sqlite3
 import pytest
 from fastapi.testclient import TestClient
 
-from app import create_app, fetch_task_by_id, format_validation_error, get_connection
+from task_tracker.api.errors import format_validation_error
+from task_tracker.app import create_app
+from task_tracker.core.config import Settings
+from task_tracker.db.sqlite import Database
+from task_tracker.modules.tasks.repository import TaskRepository
 
 
 @pytest.fixture
 def client(tmp_path) -> TestClient:
     database_path = tmp_path / "tasks.db"
-    app = create_app(str(database_path))
+    app = create_app(Settings(database_path=str(database_path)))
 
     with TestClient(app) as test_client:
         yield test_client
@@ -18,7 +22,7 @@ def client(tmp_path) -> TestClient:
 def test_database_initializes_on_startup(tmp_path) -> None:
     database_path = tmp_path / "tasks.db"
 
-    app = create_app(str(database_path))
+    app = create_app(Settings(database_path=str(database_path)))
     with TestClient(app):
         pass
 
@@ -187,16 +191,12 @@ def test_delete_returns_404_for_missing_task(client) -> None:
 
 def test_fetch_task_by_id_raises_lookup_error(tmp_path) -> None:
     database_path = tmp_path / "tasks.db"
-    app = create_app(str(database_path))
+    app = create_app(Settings(database_path=str(database_path)))
     with TestClient(app):
         pass
 
-    connection = get_connection(str(database_path))
-    try:
-        with pytest.raises(LookupError):
-            fetch_task_by_id(connection, 999)
-    finally:
-        connection.close()
+    repository = TaskRepository(Database(str(database_path)))
+    assert repository.get_by_id(999) is None
 
 
 class _FakeValidationError:

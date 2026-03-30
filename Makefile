@@ -8,7 +8,7 @@ install:
 	uv sync --dev
 
 dev:
-	HOST=$(HOST) PORT=$(PORT) uv run uvicorn app:app --reload --host $(HOST) --port $(PORT)
+	HOST=$(HOST) PORT=$(PORT) uv run uvicorn task_tracker.app:app --reload --host $(HOST) --port $(PORT)
 
 test:
 	uv run pytest

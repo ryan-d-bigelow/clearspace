@@ -5,11 +5,12 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "task-tracker"
 version = "0.1.0"
-description = "Tiny FastAPI task tracker service with SQLite and development tooling."
+description = "Modular FastAPI task tracker service with SQLite and interview-ready extension points."
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
   "fastapi>=0.115.0,<1.0.0",
+  "sqlalchemy>=2.0.38,<3.0.0",
   "uvicorn>=0.34.0,<1.0.0",
 ]
 
@@ -24,11 +25,19 @@ dev = [
 ]
 
 [tool.setuptools]
-py-modules = ["app"]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
 
 [tool.pytest.ini_options]
-addopts = "-q --cov=app --cov-report=term-missing"
+addopts = "-q --cov=task_tracker --cov-report=term-missing"
 testpaths = ["tests"]
+
+[tool.coverage.run]
+omit = [
+  "src/task_tracker/modules/_template/*",
+]
 
 [tool.ruff]
 line-length = 100
